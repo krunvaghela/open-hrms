@@ -1,0 +1,6 @@
+# Used only by scripts/e2e.mjs with a unique project name and separate database volume.
+services:
+  api:
+    image: open-hrms-api
+  web:
+    image: open-hrms-web

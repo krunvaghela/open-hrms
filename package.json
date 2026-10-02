@@ -1,0 +1,27 @@
+{
+  "name": "open-hrms",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "test:e2e": "node scripts/e2e.mjs",
+    "docker:up": "docker compose up --build -d --wait",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "test:smoke": "node scripts/smoke.mjs",
+    "test:infra": "node scripts/infrastructure-test.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "prettier": "^3.9.9"
+  },
+  "license": "Apache-2.0"
+}
