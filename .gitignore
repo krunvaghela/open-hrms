@@ -11,3 +11,5 @@ backups/
 *.tsbuildinfo
 test-results/
 playwright-report/
+
+desktop/release/

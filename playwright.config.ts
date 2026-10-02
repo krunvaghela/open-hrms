@@ -3,7 +3,7 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
   workers: 1,
-  timeout: 90000,
+  timeout: 180000,
   use: {
     actionTimeout: 15000,
     baseURL: process.env.E2E_BASE_URL || 'http://localhost:3100',

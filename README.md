@@ -1,192 +1,160 @@
 # Open HRMS
 
-A self-hosted HR workspace for Indian IT companies with 1–500 employees. This
-release includes company setup, secure login, role-based access, employee
-management, and company/SMTP settings in a Next.js portal backed by NestJS and
-PostgreSQL. The interface follows the supplied reference: a soft blue frame,
-rounded sidebar, white cards, and blue pill controls.
+**Your people, attendance, leave, and payroll — in one self-hosted workspace.**
 
-## Open the application
+[![CI](https://github.com/krunvaghela/open-hrms/actions/workflows/ci.yml/badge.svg)](https://github.com/krunvaghela/open-hrms/actions/workflows/ci.yml)
+[![Security checks](https://github.com/krunvaghela/open-hrms/actions/workflows/security.yml/badge.svg)](https://github.com/krunvaghela/open-hrms/actions/workflows/security.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/krunvaghela/open-hrms/badge)](https://scorecard.dev/viewer/?uri=github.com/krunvaghela/open-hrms)
+[![License: Apache-2.0](https://img.shields.io/github/license/krunvaghela/open-hrms)](LICENSE)
 
-**Web portal: <http://127.0.0.1:3000>**
+Open HRMS is an open-source HR management system for teams worldwide. Manage
+employees, daily check-in/out, leave approvals, salary rosters, and individual
+payslips. An optional, separate desktop app supports visible, employee-controlled
+activity tracking and screenshots.
 
-On first visit, create your company and its first Super Admin account. There is
-no default login or seeded password. The owner also receives an employee profile.
-The setup route closes permanently once the company is created.
+Company details, email provider, currency, timezone, workweek, holidays, leave,
+and payroll policies are configured by administrators in the portal. Only
+infrastructure settings and encryption secrets live in environment configuration.
 
-Requirements: Docker with Compose v2+ and Node.js 24 for the setup utility.
+[Quick start](#quick-start) · [User guide](docs/USER_GUIDE.md) ·
+[Deployment](docs/DEPLOYMENT.md) · [Desktop app](desktop/README.md) ·
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+
+> **Release status:** pre-1.0, actively developed. Core workflows are implemented
+> and tested; independent security review, workload validation, and signed desktop
+> distribution remain release gates. Intended for teams of 1–500; that capacity is
+> a design target, not a completed load-test result.
+
+## Product tour
+
+Real application screenshots using **fictional employees and illustrative salaries**.
+No live company data is included. [Regenerate the screenshots](docs/images/README.md).
+
+### Sign in
+
+![Open HRMS login page with email and password fields](docs/images/login.png)
+
+### Team overview
+
+![Open HRMS dashboard showing a fictional team's overview and navigation](docs/images/overview.png)
+
+### Employee directory
+
+![Employee directory with departments, roles, and fictional staff profiles](docs/images/employees.png)
+
+### Monthly salary roster
+
+![Salary roster with illustrative earnings, deductions, and net pay for the demo team](docs/images/salary-roster.png)
+
+### Leave management
+
+![Leave management with configurable leave types, balances, and request controls](docs/images/leave.png)
+
+## What is included
+
+| Area             | Capabilities                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| People           | Employee directory, profiles, departments, reporting managers, CSV export                      |
+| Access           | Super Admin, Admin, HR, Employee; server-enforced roles and own-record access                  |
+| Attendance       | Daily check-in/out, reviewed corrections, company-local dates                                  |
+| Leave            | Paid/unpaid policies, annual allowances, holiday-aware requests and approvals                  |
+| Payroll          | Effective-dated salaries, earnings/deductions, adjustments, proration, review and finalization |
+| Payslips         | Immutable published snapshots, salary-register CSV, HTML download and browser Print / Save PDF |
+| Desktop tracking | Device pairing, explicit Start/Pause, optional selected-display screenshots and retention      |
+| Administration   | Company, SMTP provider, currency, timezone, calendar and HR policies in the portal             |
+| Operations       | Docker Compose, PostgreSQL persistence, health checks, transactional migrations and CI         |
+
+Salary calculation uses configured components and attendance/leave policies.
+**Automatic country-specific taxes, statutory filings, and bank payments are not
+implemented.** One installation has one company, currency, and work calendar.
+Review the [calculation rules and limitations](docs/USER_GUIDE.md#attendance--leave--payroll).
+
+Desktop active share estimates recent computer interaction. It is not a measure
+of work quality and never feeds salary calculations. Tracking is off by default;
+employees explicitly start it after checking in. See [tracking behavior and
+platform readiness](desktop/README.md).
+
+## Quick start
+
+Requirements: **Docker with Compose v2** and **Node.js 24** for the setup command.
 
 ```sh
+git clone https://github.com/krunvaghela/open-hrms.git
+cd open-hrms
 npm run setup
 docker compose up --build -d --wait
 npm run test:smoke
 ```
 
-The setup command generates database passwords and an encryption key in a
-permission-restricted, git-ignored `.env`. On existing installations it preserves
-credentials and adds any missing web infrastructure settings. Docker installs
-locked dependencies and builds both applications; local `npm install` is not
-required to start the stack.
+Open **http://127.0.0.1:3000** and create your company and first Super Admin.
+There is no default password or seeded employee data. Docker installs locked
+dependencies; a local `npm install` is not required to run this stack.
 
-## What works
+The setup utility generates unique database passwords and an encryption key in
+an ignored, permission-restricted `.env`. PostgreSQL is internal by default;
+web/API host ports bind only to loopback. Database data lives in a named volume.
+**Do not run `docker compose down -v` unless you intend to delete that database.**
 
-- Two-step company setup and initial Super Admin creation.
-- Login/logout with HttpOnly session cookies, hashed server-side session tokens,
-  eight-hour expiry, and scrypt password hashing.
-- Employee profiles: department, designation, phone, joining date, employment
-  type/status, reporting manager, and generated employee ID.
-- Employee creation, editing, search, department/status filters, and CSV export.
-- Super Admin account-role management, disabling accounts, session revocation,
-  and protection of the last active Super Admin.
-- Temporary passwords that must be changed before accessing company data.
-- Company settings and encrypted SMTP configuration with an explicit test-email
-  action. Test messages go only to the signed-in Super Admin.
-- Persistent audit records for employee, account, password, and settings changes.
-- Responsive layout with keyboard-accessible dialogs and mobile navigation.
+For public hosting, complete private first-time setup, configure HTTPS and the
+matching `APP_ORIGIN`, and test backup restoration. Follow the
+[deployment guide](docs/DEPLOYMENT.md) before using real employee data.
 
-Attendance, leave, payroll, invitations, password-reset email flows, and the
-Windows/macOS/Linux desktop tracker are future modules. SMTP testing is implemented;
-automatic invitations are not. For now, administrators create accounts with a
-temporary password and share it privately. There are no demo employees or invented
-attendance/payroll figures in the main installation.
+## Security and project health
 
-## Access model
+The badges above report real workflow results and the published OpenSSF Scorecard
+score. They may show pending/unavailable until their first analysis completes.
+**A security score measures repository practices; it is not a product security
+certification.** Read individual findings and the [security policy](SECURITY.md).
 
-| Role        | Current permissions                                                                            |
-| ----------- | ---------------------------------------------------------------------------------------------- |
-| Super Admin | All employee records; create any account role; change roles/access; company and email settings |
-| Admin       | All employee records; create HR and Employee accounts; edit employee work details              |
-| HR          | All employee records; create Employee accounts; edit employee work details                     |
-| Employee    | Own employee profile and account password only                                                 |
+- CI checks formatting, TypeScript, payroll and desktop-onboarding logic, Docker
+  builds, browser workflows, and API authorization boundaries.
+- CodeQL analyzes JavaScript/TypeScript; dependency audits include the Electron
+  runtime and build tools. Dependency review checks proposed dependency changes.
+- Dependabot proposes updates for packages, Docker images, and pinned GitHub Actions.
+- OpenSSF Scorecard publishes supply-chain findings on main-branch updates and weekly.
+- GitHub private vulnerability reporting provides a non-public disclosure channel.
 
-Roles and employment profiles are separate. Admins and HR users also have their
-own employee profiles. Employment status does not disable login; use **Roles &
-access → Manage access** to disable an account. Role/access changes revoke existing
-sessions, including your own if you modify your account.
+[Report a vulnerability privately](https://github.com/krunvaghela/open-hrms/security/advisories/new).
+Use [public issues](https://github.com/krunvaghela/open-hrms/issues) for reproducible
+bugs and feature requests with fictional data.
 
-Permissions are enforced by the API, not just by hiding controls. Mutating API
-requests require `X-HRMS-Request: 1`; browser origins must match `APP_ORIGIN`. The
-API does not enable cross-origin access. Browser traffic uses same-origin `/api`
-requests proxied by the web service.
-
-## Services and configuration
-
-| Service       | Container address | Host access                                       |
-| ------------- | ----------------- | ------------------------------------------------- |
-| Web           | `web:3000`        | `127.0.0.1:3000`, configurable through `WEB_PORT` |
-| API           | `api:4000`        | `127.0.0.1:4000`, configurable through `API_PORT` |
-| PostgreSQL 18 | `postgres:5432`   | Internal by default; optional localhost port 5434 |
-
-Only bootstrap/infrastructure settings belong in `.env`: database credentials,
-ports, `APP_ORIGIN`, and `APP_ENCRYPTION_KEY`. Company details and SMTP provider
-settings live in PostgreSQL and are edited in the portal. Use the exact
-`APP_ORIGIN` hostname when opening the portal (default `http://127.0.0.1:3000`).
-If you change the web port or public URL, update `APP_ORIGIN` as well.
-
-SMTP passwords are encrypted with AES-256-GCM. Keep the encryption key together
-with secure database backups; changing it without migrating encrypted secrets
-makes saved provider passwords unreadable. Use port 587 with STARTTLS or port 465
-with implicit TLS as required by your provider. TLS certificate verification stays
-enabled. Outbound mail runs only after a Super Admin explicitly requests a test.
-
-The API uses `open_hrms_app`, a database role without superuser privileges.
-PostgreSQL stores data in the named `postgres_data` volume mounted at
-`/var/lib/postgresql`. Rebuilds and `docker compose down` preserve it.
-**`docker compose down -v` deletes the installation's database.**
-
-The initial role-provisioning script runs only on an empty volume. Editing a
-password in `.env` does not rotate the corresponding PostgreSQL role password.
-Application schema changes use versioned, transactional migrations in
-`apps/api/src/migrations.ts`, applied under an advisory lock at API startup.
-Add new migration entries rather than editing an applied migration.
-
-The Compose defaults are local development settings. Complete first-time setup
-before exposing the installation. Public deployments need a trusted HTTPS reverse
-proxy, an HTTPS `APP_ORIGIN` (which enables secure cookies), protected secrets, and
-verified backup restoration. Proxy `/api` without caching or enabling broad CORS.
-
-## Daily commands
-
-```sh
-docker compose ps
-docker compose logs -f web api postgres
-docker compose up --build -d --wait
-docker compose down
-```
-
-- API liveness: <http://localhost:4000/api/health/live>
-- Database readiness: <http://localhost:4000/api/health/ready>
-
-Readiness executes a PostgreSQL query and returns HTTP 503 during a database
-outage. Each service starts after its dependencies pass health checks. Application
-containers run as non-root users.
-
-For an administrative SQL session:
-
-```sh
-docker compose exec postgres sh -c 'psql -U postgres -d "$POSTGRES_DB"'
-```
-
-For a local SQL client:
-
-```sh
-docker compose -f compose.yaml -f compose.database.yaml up -d --wait
-```
-
-Connect to `127.0.0.1:5434`, the database named by `POSTGRES_DB`, user
-`open_hrms_app`, and password from `APP_DB_PASSWORD`. The optional port mapping is
-localhost-only. The API always connects through `postgres:5432`.
-
-## Development and verification
+## Development
 
 ```sh
 npm ci
 npm run typecheck
-npm run build
-npm run test:smoke
+npm run test:payroll
+npm run test:desktop
+npm run format:check
+docker compose build
 npx playwright install chromium
 npm run test:e2e
 ```
 
-Build the Docker images before running the browser tests. `test:e2e` starts a
-separate, uniquely named Compose project on ports 3100/4100. It creates its own
-company and employees, runs the browser/API checks, then removes only that test
-project and its database volume. It never seeds the main workspace. Screenshots
-and failure traces are written under the ignored `test-results/` directory.
-Tests include role escalation attempts, protected routes, CSRF checks, required
-password changes, last-Super-Admin protection, session revocation, persistence,
-SMTP error handling, employee edits, CSV export, and responsive layouts.
+Browser tests create and remove a separate Docker project and database. They do
+not seed your main installation. Start the desktop app with
+`npm --prefix desktop ci` followed by `npm run desktop:start`.
 
-`npm run test:infra` briefly stops and recreates the **main local** PostgreSQL
-container to test persistence and reconnection. Run it only on a disposable
-development installation, never during real company use.
+| Directory          | Purpose                                                               |
+| ------------------ | --------------------------------------------------------------------- |
+| `apps/web`         | Next.js, React, Tailwind, Radix UI portal                             |
+| `apps/api`         | NestJS API, authorization, PostgreSQL migrations and payroll          |
+| `desktop`          | Electron tracking app, onboarding and platform packaging              |
+| `tests`, `scripts` | Browser, domain, onboarding and infrastructure checks                 |
+| `docs`             | Product screenshots, user guide and deployment instructions           |
+| `.github`          | CI, security workflows, dependency updates and contribution templates |
 
-## Backups
+## Contributing and support
 
-```sh
-mkdir -p backups
-docker compose exec -T postgres sh -c 'pg_dump -U postgres -d "$POSTGRES_DB" -Fc' > backups/open-hrms.dump
-```
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks, and contribution guidance.
+Please follow the [code of conduct](CODE_OF_CONDUCT.md). Project maintenance is led
+by [@krunvaghela](https://github.com/krunvaghela); community support is through issues,
+with no guaranteed response-time or production-support SLA.
 
-Store backups securely along with `APP_ENCRYPTION_KEY`. Test restoration into a
-separate installation with matching database roles before relying on backups.
-
-## Layout
-
-```text
-apps/web/                 Next.js portal, Tailwind styles, Radix dialog primitives
-apps/api/                 NestJS API, role guards, database migrations
-apps/web/src/components/ui/ Local reusable UI primitives; shadcn-compatible config
-apps/api/src/migrations.ts Versioned database schema changes
-docker/postgres/           Initial database-role provisioning
-scripts/                  Setup, smoke/infrastructure tests, isolated E2E runner
-tests/                    Browser workflows and API authorization checks
-compose.yaml              Web + API + PostgreSQL
-compose.database.yaml     Optional local database port
-compose.test.yaml         Image overrides for isolated tests
-```
+The next release gates include MFA/SSO and recovery planning, independent security
+and load testing, and signed desktop installers verified on Windows, macOS, and
+Linux. See the [deployment readiness checklist](docs/DEPLOYMENT.md#remaining-release-gates).
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE). No proprietary UI kit assets
-are included.
+[Apache License 2.0](LICENSE). No proprietary UI kit assets are included.

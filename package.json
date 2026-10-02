@@ -17,7 +17,12 @@
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "test:smoke": "node scripts/smoke.mjs",
-    "test:infra": "node scripts/infrastructure-test.mjs"
+    "test:infra": "node scripts/infrastructure-test.mjs",
+    "test:payroll": "node --test scripts/payroll-domain.test.mjs",
+    "desktop:start": "npm --prefix desktop start",
+    "format:check": "prettier --check .",
+    "test:desktop": "node --test scripts/desktop-onboarding.test.cjs",
+    "docs:screenshots": "node scripts/e2e.mjs --screenshots"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

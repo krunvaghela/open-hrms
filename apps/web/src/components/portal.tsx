@@ -49,6 +49,9 @@ import { Alert } from './ui/field';
 import { Dialog } from './ui/dialog';
 import { EmployeeDialog, AccessDialog } from './employee-dialog';
 import { Settings, PasswordForm } from './settings';
+import { Attendance, Leave, Policies } from './workforce';
+import { Payroll } from './payroll';
+import { Tracking } from './tracking';
 
 export function Avatar({
   name,
@@ -192,6 +195,14 @@ export function Portal() {
   const nav = [
     { href: '/', label: 'Overview', icon: LayoutDashboard },
     { href: '/employees', label: canManage ? 'Employees' : 'My profile', icon: UsersRound },
+    { href: '/attendance', label: 'Attendance', icon: Clock3 },
+    { href: '/leave', label: 'Leave management', icon: CalendarDays },
+    ...(canManage ? [{ href: '/payroll', label: 'Salary roster', icon: Layers3 }] : []),
+    { href: '/tracking', label: 'Work activity', icon: UserCheck },
+    { href: '/payslips', label: 'My payslips', icon: FolderHeart },
+    ...(['SUPER_ADMIN', 'ADMIN'].includes(session.user.role)
+      ? [{ href: '/policies', label: 'HR policies', icon: SlidersHorizontal }]
+      : []),
     ...(isSuper ? [{ href: '/access', label: 'Roles & access', icon: ShieldCheck }] : []),
   ];
   const departments = [...new Set(people.map((p) => p.department).filter(Boolean))];
@@ -599,8 +610,8 @@ export function Portal() {
                     <div className="personal-note">
                       <FolderHeart size={34} />
                       <p>
-                        Keep your profile current and your account secure. Attendance, leave, and
-                        payslips will join your workspace in upcoming releases.
+                        Check in for your workday, request leave, and download your published
+                        payslips from the sidebar.
                       </p>
                       <Link href="/account" className="text-link">
                         Manage your account <ArrowRight size={16} />
@@ -857,6 +868,22 @@ export function Portal() {
             ) : (
               <Restricted />
             ))}
+          {pathname === '/tracking' && <Tracking session={session} />}
+          {pathname === '/attendance' && <Attendance session={session} />}
+          {pathname === '/leave' && <Leave session={session} />}
+          {pathname === '/policies' && <Policies session={session} />}
+          {['/payroll', '/salaries', '/payslips'].includes(pathname) && (
+            <Payroll
+              session={session}
+              view={
+                pathname === '/salaries'
+                  ? 'salaries'
+                  : pathname === '/payslips'
+                    ? 'payslips'
+                    : 'roster'
+              }
+            />
+          )}
           {pathname === '/settings' &&
             (isSuper ? <Settings session={session} onSaved={load} /> : <Restricted />)}
           {pathname === '/account' && (
@@ -880,6 +907,13 @@ export function Portal() {
           {![
             '/',
             '/employees',
+            '/attendance',
+            '/leave',
+            '/policies',
+            '/payroll',
+            '/salaries',
+            '/payslips',
+            '/tracking',
             '/access',
             '/settings',
             '/account',
@@ -930,10 +964,11 @@ export function Portal() {
             Use the temporary password shared by your administrator. You’ll choose a new password
             before entering the workspace.
           </p>
-          <h3>What’s next</h3>
+          <h3>Attendance, leave, and payroll</h3>
           <p>
-            Attendance, leave, payroll, and the desktop tracker are planned for upcoming releases.
-            This release focuses on your people and workspace setup.
+            Use Attendance to check in and request corrections. Leave management tracks requests and
+            balances. HR prepares salary rosters; administrators publish payslips after reviewing
+            the month.
           </p>
           <h3>Need an account correction?</h3>
           <p>Contact your company’s HR team or Super Admin.</p>

@@ -63,8 +63,8 @@ export class AuthController {
         [id, input.name, input.email, hashed],
       );
       await client.query(
-        "INSERT INTO employees (id,designation,department,joining_date) VALUES ($1,'Workspace owner','Management',CURRENT_DATE)",
-        [id],
+        "INSERT INTO employees (id,designation,department,joining_date) VALUES ($1,'Workspace owner','Management',(now() AT TIME ZONE $2)::date)",
+        [id, input.company.timezone],
       );
       await client.query(
         "INSERT INTO audit_log (actor_id,action,target_id) VALUES ($1,'workspace.created','1')",
@@ -150,6 +150,7 @@ export class AuthController {
         [hashed, request.user.id],
       );
       await client.query('DELETE FROM sessions WHERE user_id=$1', [request.user.id]);
+      await client.query('DELETE FROM tracker_devices WHERE employee_id=$1', [request.user.id]);
       await client.query(
         "INSERT INTO audit_log (actor_id,action,target_id) VALUES ($1,'password.changed',$2)",
         [request.user.id, request.user.id],

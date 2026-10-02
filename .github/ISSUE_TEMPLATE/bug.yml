@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible product issue using fictional data.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Never include credentials, employee records, salary data, or real desktop screenshots. Use the private security reporting link for vulnerabilities.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the page, role, and minimum steps with fictional inputs.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Commit or version, OS, browser, Docker version; for desktop issues include the OS permission state.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized logs or screenshots
+      description: Remove cookies, pairing codes, tokens, emails, employee and salary data.

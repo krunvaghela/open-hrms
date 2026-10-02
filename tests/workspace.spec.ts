@@ -1,3 +1,5 @@
+import { auditScreens } from './screen-audit';
+import { checkWorkforce } from './workforce-checks';
 import { test, expect, type APIRequestContext } from '@playwright/test';
 const headers = { 'X-HRMS-Request': '1' };
 const owner = { email: 'owner@example.test', password: 'Owner initial passphrase 123' };
@@ -23,7 +25,10 @@ test('setup, employee management, sessions, settings, responsive UI, and server 
   );
   const state = await page.request.get('/api/auth/setup');
   expect(await state.json()).toEqual({ configured: false });
-  await page.goto('/');
+  const firstPage = await page.goto('/');
+  expect(firstPage?.headers()['x-frame-options']).toBe('DENY');
+  expect(firstPage?.headers()['x-content-type-options']).toBe('nosniff');
+  expect(firstPage?.headers()['referrer-policy']).toBe('same-origin');
   await expect(page).toHaveURL(/\/setup$/);
   await page.screenshot({ path: 'test-results/setup-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 375, height: 812 });
@@ -34,7 +39,7 @@ test('setup, employee management, sessions, settings, responsive UI, and server 
   await page.screenshot({ path: 'test-results/setup-mobile.png', fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.getByLabel('Company name', { exact: true }).fill('Ayelite Technologies');
-  await page.getByLabel('State / Union territory').fill('Gujarat');
+  await page.getByLabel('State / region').fill('Gujarat');
   await page.getByLabel('City', { exact: true }).fill('Ahmedabad');
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await page.getByLabel('Your full name').fill('Krunal Patel');
@@ -287,6 +292,8 @@ test('setup, employee management, sessions, settings, responsive UI, and server 
       await page.goto('/');
     }
   }
+  await checkWorkforce(page, browser);
+  await auditScreens(page, browser);
   await anonymous.close();
   await employee.close();
 });

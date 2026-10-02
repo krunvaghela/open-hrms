@@ -1394,7 +1394,9 @@ tbody tr:hover {
   z-index: 51;
   width: min(640px, calc(100vw - 32px));
   max-height: calc(100dvh - 48px);
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: white;
   border: 1px solid #f1f4f8;
   border-radius: 23px;
@@ -2501,5 +2503,285 @@ th {
   }
   .button-icon {
     width: 44px;
+  }
+}
+
+/* Workforce modules share the portal's card, type, and control tokens. */
+.work-card {
+  padding: 24px;
+  margin-bottom: 22px;
+  min-width: 0;
+}
+.work-card h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+.work-card p {
+  line-height: 1.6;
+}
+.work-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.work-toolbar h2 {
+  margin: 0;
+}
+.work-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.work-form {
+  display: grid;
+  gap: 20px;
+}
+.work-form > .button {
+  justify-self: start;
+}
+.work-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.work-stat {
+  padding: 24px;
+  display: grid;
+  gap: 12px;
+}
+.work-stat > span,
+.work-stat > small,
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.work-stat > strong {
+  font-size: 28px;
+  letter-spacing: -1px;
+  overflow-wrap: anywhere;
+}
+.work-stat strong small {
+  font-size: 13px;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.cell-sub {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.wrap-cell {
+  white-space: normal;
+  min-width: 180px;
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+.issue {
+  display: block;
+  color: #ad422d;
+  margin-bottom: 7px;
+}
+.work-days,
+.component-row {
+  border: 1px solid #dce3ee;
+  padding: 16px;
+  border-radius: 14px;
+}
+.work-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.work-days legend,
+.component-row legend {
+  padding: 0 6px;
+  font-size: 13px;
+}
+.work-days label,
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+}
+.check-row input,
+.work-days input {
+  width: 17px;
+  height: 17px;
+  accent-color: #3871e0;
+}
+.component-editor {
+  display: grid;
+  gap: 16px;
+}
+.component-editor > .button {
+  justify-self: start;
+}
+.component-row .form-grid {
+  margin: 10px 0;
+}
+.work-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.work-tabs a {
+  border-radius: 999px;
+  border: 1px solid #dce3ee;
+  padding: 10px 18px;
+  font-size: 13px;
+  background: white;
+}
+.work-tabs a.active {
+  color: white;
+  background: #3473e6;
+  border-color: #3473e6;
+}
+.payslip-preview {
+  border: 1px solid #dce3ee;
+  border-radius: 14px;
+  padding: 18px;
+  overflow: hidden;
+}
+.work-form textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+@media (max-width: 640px) {
+  .work-card {
+    padding: 16px;
+  }
+  .work-toolbar {
+    align-items: stretch;
+  }
+  .work-actions {
+    width: 100%;
+  }
+  .work-stats {
+    grid-template-columns: 1fr;
+  }
+  .work-stat > strong {
+    font-size: 24px;
+  }
+  .work-form .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.screenshot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
+}
+.screenshot-grid a {
+  min-width: 0;
+  border: 1px solid #dce3ee;
+  border-radius: 14px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+.screenshot-grid img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #f1f4f8;
+}
+.screenshot-grid small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.pair-code {
+  padding: 16px;
+  border-radius: 14px;
+  background: #edf3ff;
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.sidebar {
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+}
+.sidebar > * {
+  flex-shrink: 0;
+}
+@media (max-width: 1200px) {
+  .sidebar {
+    max-height: calc(100dvh - 32px);
+  }
+}
+@media (max-width: 700px) {
+  .sidebar,
+  .sidebar-collapsed .sidebar {
+    max-height: calc(100dvh - 20px);
+  }
+}
+
+/* Shared dialog spacing and scrolling apply to every feature, not individual forms. */
+.dialog-heading {
+  flex-shrink: 0;
+}
+.dialog-heading > div {
+  min-width: 0;
+}
+.dialog-heading > button {
+  flex-shrink: 0;
+}
+.dialog-body {
+  padding: 24px 27px;
+  overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+  display: grid;
+  gap: 20px;
+}
+.dialog-body > .dialog-form,
+.dialog-body > .help-content {
+  padding: 0;
+}
+.dialog-body .work-form,
+.dialog-body .component-editor,
+.dialog-body .component-row {
+  min-width: 0;
+}
+.dialog-body .work-actions {
+  gap: 10px;
+}
+.dialog-body .work-form > .button {
+  margin-top: 4px;
+}
+.dialog-body p {
+  line-height: 1.6;
+}
+.dialog-content :is(input, select, textarea) {
+  max-width: 100%;
+}
+.dialog-heading h2,
+.dialog-heading p,
+.dialog-body {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .dialog-body {
+    padding: 20px;
+  }
+  .dialog-content {
+    max-height: calc(100dvh - 24px);
+    width: calc(100vw - 24px);
+  }
+  .dialog-body .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .dialog-body .dialog-footer {
+    flex-wrap: wrap;
   }
 }

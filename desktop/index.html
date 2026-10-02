@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Open HRMS Desktop</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <span class="brand">◉ Open HRMS</span>
+      <h1>Your workday,<br />with you.</h1>
+      <p>Visible tracking. Your choice of display. Pause whenever you need.</p>
+      <div id="status" role="status">Loading…</div>
+      <p id="error" role="alert" tabindex="-1" hidden></p>
+      <form id="pair">
+        <label
+          >HRMS portal URL<input
+            id="url"
+            type="url"
+            placeholder="https://hr.example.com"
+            required /></label
+        ><label
+          >One-time pairing code<input
+            id="code"
+            minlength="64"
+            maxlength="64"
+            autocomplete="off"
+            required
+        /></label>
+        <p>
+          In your web portal, open Work activity → Create pairing code. Codes expire in 5 minutes.
+        </p>
+        <button>Pair this computer</button>
+      </form>
+      <section id="controls" hidden>
+        <h2 id="person"></h2>
+        <p id="host"></p>
+        <div class="setup-heading">
+          <h3>Before you start</h3>
+          <button id="refresh" class="outline">Refresh setup checks</button>
+        </div>
+        <ol class="setup-checks" aria-label="Tracking setup checklist">
+          <li>
+            <div>
+              <strong>1. Company policy</strong
+              ><span id="company-status" class="check-badge">Checking</span>
+            </div>
+            <p id="company-detail">Connecting to your HRMS portal…</p>
+          </li>
+          <li>
+            <div>
+              <strong>2. Attendance</strong
+              ><span id="attendance-status" class="check-badge">Checking</span>
+            </div>
+            <p id="attendance-detail">Checking whether you have an open workday.</p>
+            <button id="attendance" class="outline">Open Attendance</button>
+          </li>
+          <li>
+            <div>
+              <strong>3. Screen Recording</strong
+              ><span id="permission-status" class="check-badge">Checking</span>
+            </div>
+            <p id="permission-detail"></p>
+            <p id="permission-app" class="help"></p>
+            <div class="actions">
+              <button id="screens" class="outline">Allow screen recording & choose display</button
+              ><button id="permissions" class="outline" hidden>
+                Open Screen Recording settings</button
+              ><button id="restart" class="outline" hidden>Restart app</button>
+            </div>
+            <p id="restart-help" class="help" hidden>
+              If you already enabled permission, quit and reopen this exact app. Development runs
+              appear as Electron; the packaged app appears as Open HRMS Desktop. Restarting keeps
+              your pairing when secure storage is available and never starts tracking automatically.
+            </p>
+          </li>
+          <li id="display-step">
+            <div>
+              <strong>4. Shared display</strong
+              ><span id="display-status" class="check-badge">Choose display</span>
+            </div>
+            <label
+              >Display to share<select id="display">
+                <option value="">Allow access and load displays first</option>
+              </select></label
+            >
+            <p class="help">
+              Setup verifies access with a tiny local capture. Setup captures are never saved or
+              uploaded. Regular screenshots begin only after you press Start tracking.
+            </p>
+          </li>
+        </ol>
+        <p id="policy"></p>
+        <label class="consent"
+          ><input id="consent" type="checkbox" />I understand that while tracking, HR and
+          administrators can review my sampled activity and any screenshots enabled by company
+          policy.</label
+        >
+        <p id="start-hint" role="status"></p>
+        <div class="actions">
+          <button id="start" disabled>Start tracking</button
+          ><button id="stop" class="outline">Pause tracking</button>
+        </div>
+        <button id="forget" class="outline">Disconnect this computer</button>
+        <p>
+          Activity is sampled every 30 seconds. It does not measure work quality or determine pay.
+          Closing this window, locking the screen, or putting the computer to sleep pauses tracking.
+          No offline data is saved for later upload.
+        </p>
+      </section>
+    </main>
+    <script src="renderer.js"></script>
+  </body>
+</html>

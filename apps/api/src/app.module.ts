@@ -8,6 +8,11 @@ import { AuthController } from './auth.controller';
 import { PeopleController } from './people.controller';
 import { SettingsController } from './settings.controller';
 
+import { TrackingController } from './tracking.controller';
+import { WorkforceService } from './workforce.service';
+import { WorkforceController } from './workforce.controller';
+import { PayrollController } from './payroll.controller';
+
 @Module({
   imports: [
     ThrottlerModule.forRoot([
@@ -20,9 +25,18 @@ import { SettingsController } from './settings.controller';
       { name: 'burst', ttl: 1000, limit: 100, getTracker: (request) => request.ip },
     ]),
   ],
-  controllers: [HealthController, AuthController, PeopleController, SettingsController],
+  controllers: [
+    HealthController,
+    AuthController,
+    PeopleController,
+    SettingsController,
+    WorkforceController,
+    PayrollController,
+    TrackingController,
+  ],
   providers: [
     DatabaseService,
+    WorkforceService,
     AuthService,
     { provide: APP_GUARD, useClass: AccessGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },

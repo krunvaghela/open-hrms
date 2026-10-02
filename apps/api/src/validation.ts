@@ -22,7 +22,7 @@ export const companySchema = z
     address: z.string().trim().max(500).default(''),
     timezone: z
       .string()
-      .default('Asia/Kolkata')
+      .default('UTC')
       .refine((value) => {
         try {
           new Intl.DateTimeFormat('en', { timeZone: value });

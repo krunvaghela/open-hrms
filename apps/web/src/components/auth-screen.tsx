@@ -43,6 +43,7 @@ export function AuthScreen({
   const [show, setShow] = useState(false);
   const [values, setValues] = useState({
     company: '',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     state: '',
     city: '',
     name: '',
@@ -68,7 +69,12 @@ export function AuthScreen({
         });
       else if (setup)
         await api('/auth/setup', 'POST', {
-          company: { name: values.company, state: values.state, city: values.city },
+          company: {
+            name: values.company,
+            state: values.state,
+            city: values.city,
+            timezone: values.timezone,
+          },
           name: values.name,
           email: values.email,
           password: values.password,
@@ -187,7 +193,7 @@ export function AuthScreen({
                   />
                 </Field>
                 <div className="form-grid">
-                  <Field label="State / Union territory">
+                  <Field label="State / region">
                     <input
                       maxLength={200}
                       placeholder="e.g. Gujarat"
@@ -204,12 +210,24 @@ export function AuthScreen({
                     />
                   </Field>
                 </div>
+                <Field
+                  label="Company timezone"
+                  hint="IANA timezone used for attendance dates and payroll periods."
+                >
+                  <input
+                    required
+                    value={values.timezone}
+                    onChange={update('timezone')}
+                    placeholder="Europe/London"
+                  />
+                </Field>
                 <div className="info-strip">
                   <span className="info-icon">
                     <ShieldCheck size={18} />
                   </span>
                   <span>
-                    Built for Indian teams<small>Default timezone: India Standard Time (IST)</small>
+                    Built for teams everywhere
+                    <small>Configure currency and work policies after setup.</small>
                   </span>
                 </div>
               </>

@@ -5,3 +5,6 @@ package-lock.json
 test-results
 playwright-report
 .env
+
+desktop/release
+desktop/package-lock.json

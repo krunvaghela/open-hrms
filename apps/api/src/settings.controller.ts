@@ -43,6 +43,7 @@ export class SettingsController {
   async company(@Req() request: AuthRequest, @Body() body: unknown) {
     const input = parse(companySchema, body);
     await this.db.transaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(427010)');
       await client.query(
         'UPDATE company SET name=$1,state=$2,city=$3,address=$4,timezone=$5 WHERE id=1',
         [input.name, input.state, input.city, input.address, input.timezone],
@@ -70,6 +71,7 @@ export class SettingsController {
   async saveEmail(@Req() request: AuthRequest, @Body() body: unknown) {
     const input = parse(smtpSchema, body);
     await this.db.transaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(427010)');
       await client.query('SELECT pg_advisory_xact_lock(427005)');
       const existing = (
         await client.query('SELECT password_encrypted FROM email_settings WHERE id=1')

@@ -57,6 +57,7 @@ export class PeopleController {
     const hashed = await hashPassword(input.password);
     try {
       await this.db.transaction(async (client) => {
+        await client.query('SELECT pg_advisory_xact_lock(427010)');
         if (
           input.managerId &&
           !(await client.query('SELECT id FROM employees WHERE id=$1', [input.managerId])).rowCount
@@ -98,9 +99,29 @@ export class PeopleController {
     const id = parse(z.uuid(), rawId);
     const input = parse(z.object(employeeFields).strict(), body);
     await this.db.transaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(427010)');
       await client.query('SELECT pg_advisory_xact_lock(427003)');
       if (!(await client.query('SELECT id FROM employees WHERE id=$1', [id])).rowCount)
         throw new NotFoundException('Employee not found');
+      const dates = (
+        await client.query('SELECT joining_date::text,end_date::text FROM employees WHERE id=$1', [
+          id,
+        ])
+      ).rows[0];
+      if (dates.end_date && input.joiningDate > dates.end_date)
+        throw new BadRequestException('Joining date exceeds the last employment date');
+      if (dates.joining_date !== input.joiningDate) {
+        const earliest = [dates.joining_date, input.joiningDate].sort()[0];
+        if (
+          (
+            await client.query(
+              "SELECT month FROM payroll_runs WHERE status='FINALIZED' AND month >= $1",
+              [earliest.slice(0, 7)],
+            )
+          ).rowCount
+        )
+          throw new ConflictException('Joining date affects finalized payroll');
+      }
       if (input.managerId) {
         const chain = await client.query(
           `WITH RECURSIVE managers AS (
@@ -142,6 +163,7 @@ export class PeopleController {
     const id = parse(z.uuid(), rawId);
     const input = parse(z.object({ role, active: z.boolean() }).strict(), body);
     await this.db.transaction(async (client) => {
+      await client.query('SELECT pg_advisory_xact_lock(427010)');
       await client.query('SELECT pg_advisory_xact_lock(427004)');
       const current = (await client.query('SELECT role,active FROM users WHERE id=$1', [id]))
         .rows[0];
@@ -165,6 +187,7 @@ export class PeopleController {
         id,
       ]);
       await client.query('DELETE FROM sessions WHERE user_id=$1', [id]);
+      await client.query('DELETE FROM tracker_devices WHERE employee_id=$1', [id]);
       await client.query(
         "INSERT INTO audit_log (actor_id,action,target_id,details) VALUES ($1,'access.updated',$2,$3)",
         [request.user.id, id, JSON.stringify(input)],

@@ -3,13 +3,15 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
+import { json } from 'express';
 import { validateEncryptionKey } from './security';
 
 async function bootstrap(): Promise<void> {
   validateEncryptionKey();
   if (!process.env.APP_ORIGIN) throw new Error('APP_ORIGIN is required');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
   app.use(helmet());
+  app.use(json({ limit: '300kb' }));
   app.use(
     (
       _request: unknown,

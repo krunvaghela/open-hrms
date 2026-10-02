@@ -76,10 +76,18 @@ export class AccessGuard implements CanActivate {
     }
     const targets = [context.getHandler(), context.getClass()];
     if (this.reflector.getAllAndOverride<boolean>('public', targets)) return true;
-    const token = sessionToken(request);
+    const deviceToken =
+      request.headers.authorization?.startsWith('Bearer ') &&
+      request.path.startsWith('/api/tracking/device/')
+        ? request.headers.authorization.slice(7)
+        : null;
+    const token = deviceToken ?? sessionToken(request);
     if (!/^[a-f0-9]{64}$/.test(token)) throw new UnauthorizedException('Please sign in');
     const { rows } = await this.db.query(
-      `SELECT u.id, u.name, u.email, u.role, u.must_change_password AS "mustChangePassword"
+      deviceToken
+        ? `SELECT u.id,u.name,u.email,u.role,u.must_change_password AS "mustChangePassword"
+      FROM tracker_devices d JOIN users u ON u.id=d.employee_id WHERE d.token_hash=$1 AND d.expires_at>now() AND u.active=true`
+        : `SELECT u.id, u.name, u.email, u.role, u.must_change_password AS "mustChangePassword"
       FROM sessions s JOIN users u ON u.id = s.user_id
       WHERE s.token_hash = $1 AND s.expires_at > now() AND u.active = true`,
       [tokenHash(token)],

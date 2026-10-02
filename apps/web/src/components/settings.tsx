@@ -144,7 +144,7 @@ export function Settings({ session, onSaved }: { session: Session; onSaved: () =
                     />
                   </Field>
                   <div className="form-grid">
-                    <Field label="State / Union territory">
+                    <Field label="State / region">
                       <input name="state" maxLength={200} defaultValue={session.company.state} />
                     </Field>
                     <Field label="City">
