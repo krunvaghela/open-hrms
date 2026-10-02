@@ -123,6 +123,8 @@ A successful backup command is not a tested recovery procedure.
 
 ## 6. Upgrade and roll back
 
+Container base images are pinned to multi-platform digests. Review Dependabot
+updates to keep those digests current; pinning alone does not provide security patches.
 Read changes, migrations, security alerts, and release notes. Back up first. Build
 and test the new commit against an isolated restored database before maintenance.
 Deploy with `docker compose up --build -d --wait` and verify readiness and key flows.

@@ -53,7 +53,12 @@ Do not run `test:infra` against an installation used by a real company.
 
 CI checks types, formatting, domain logic, onboarding, Docker builds, browser
 flows, and security findings. A maintainer reviews changes before merging. There
-is no automatic merge of dependency or security updates.
+is no automatic merge of dependency or security updates. The `main` branch requires
+a pull request and passing type/unit, Docker/browser, dependency-audit, and CodeQL
+checks. Force pushes and branch deletion are blocked. The single maintainer can
+merge their own pull request after checks pass; independent approval is not yet
+a required gate. Additional review is encouraged for authentication, payroll, and
+tracking changes.
 
 ## License and conduct
 
